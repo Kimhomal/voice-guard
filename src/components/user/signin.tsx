@@ -10,12 +10,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router';
-import { IAuthService, IFirebaseObj, IUser } from '../../service/auth_service';
+import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AuthService } from '../../service/auth_service';
+import { firebase } from '../../service/firebase';
 import styles from './signin.module.css';
 
-const Signin = ({ authService }: { authService: IAuthService }) => {
+const Signin = ({ authService }: { authService: AuthService }) => {
   const history = useHistory();
 
   const goToGuard = (userId: string) => {
@@ -26,15 +27,14 @@ const Signin = ({ authService }: { authService: IAuthService }) => {
   };
 
   const onLogin = (name: string) => {
-    authService.login(name).then((result: IFirebaseObj) => {
-      const user = result.user;
-      console.log(user);
-      goToGuard(user.uid);
+    authService.login(name).then((result: firebase.auth.UserCredential) => {
+      const user: firebase.User | null = result.user;
+      goToGuard(user!.uid);
     });
   };
 
   useEffect(() => {
-    authService.onAuthChange((user: IUser | null) => {
+    authService.onAuthChange((user) => {
       user && goToGuard(user.uid);
     });
   });

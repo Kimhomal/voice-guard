@@ -1,13 +1,10 @@
 import {
   AppBar,
-  createStyles,
   fade,
   IconButton,
   InputBase,
-  makeStyles,
   Menu,
   MenuItem,
-  Theme,
   Toolbar,
   Typography,
 } from '@material-ui/core';
@@ -17,12 +14,17 @@ import {
   AccountCircle as AccountCircleIcon,
   MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
+import { toggleSidebarFucntion } from '../../app';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grow: {
       flexGrow: 1,
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -85,7 +87,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Header = (props: any) => {
+const Header = ({
+  onLogout,
+  toggleSidebar,
+}: {
+  onLogout: () => void;
+  toggleSidebar: toggleSidebarFucntion;
+}) => {
   const classes = useStyles();
 
   const inputRef = React.useRef<HTMLInputElement>();
@@ -110,6 +118,10 @@ const Header = (props: any) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
+
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
@@ -117,10 +129,6 @@ const Header = (props: any) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const menuId = 'primary-search-account-menu';
@@ -135,7 +143,7 @@ const Header = (props: any) => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={onLogout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -165,14 +173,15 @@ const Header = (props: any) => {
   );
 
   return (
-    <div className={classes.grow}>
-      <AppBar position="static">
+    <>
+      <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={toggleSidebar}
           >
             <MenuIcon />
           </IconButton>
@@ -222,7 +231,7 @@ const Header = (props: any) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
-    </div>
+    </>
   );
 };
 

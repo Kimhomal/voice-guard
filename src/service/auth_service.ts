@@ -1,25 +1,17 @@
 import {
+  firebase,
   firebaseAuth,
   githubAuthProvider,
   googleAuthProvider,
 } from './firebase';
-import firebase from 'firebase/app';
 
-export interface IFirebaseObj {
-  [userProp: string]: any;
-}
-
-export interface IUser {
-  [userProp: string]: any;
-}
-
-export interface IAuthService {
+export interface AuthService {
   login(providerName: string): Promise<firebase.auth.UserCredential>;
   logout(): void;
-  onAuthChange(onUserChanged: (user: IUser | null) => void): void;
+  onAuthChange(onUserChanged: (user: firebase.User | null) => void): void;
 }
 
-class AuthService implements IAuthService {
+class AuthServiceImpl implements AuthService {
   login(providerName: string) {
     switch (providerName) {
       case 'Google':
@@ -35,9 +27,9 @@ class AuthService implements IAuthService {
     firebaseAuth.signOut();
   }
 
-  onAuthChange(onUserChanged: (user: IUser | null) => void) {
+  onAuthChange(onUserChanged: (user: firebase.User | null) => void) {
     firebaseAuth.onAuthStateChanged(onUserChanged);
   }
 }
 
-export default AuthService;
+export default AuthServiceImpl;
