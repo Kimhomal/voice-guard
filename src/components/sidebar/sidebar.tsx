@@ -5,14 +5,17 @@ import {
   ListItemText,
   Drawer,
   Toolbar,
-  Icon,
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
+import {
+  PlayCircleFilled as PlayCircleFilledIcon,
+  Mic as MicIcon,
+} from '@material-ui/icons';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import clsx from 'clsx';
-import React from 'react';
-import { toggleSidebarFucntion } from '../../app';
+import { toggleSidebarFucntion } from '../private_route/private_route';
+import { Link } from 'react-router-dom';
 
 export type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -77,19 +80,21 @@ const Sidebar = ({
   const classes = useStyles();
 
   const items = [
-    { icon: 'fa fa-plus-circle', text: '재생목록' },
-    { icon: 'add_circle', text: '탐색' },
-    { icon: 'MoveToInbox', text: '홈' },
-    { icon: 'Mail', text: '구독' },
+    { icon: <MicIcon></MicIcon>, text: '보이스 목록', path: '/guard' },
+    {
+      icon: <PlayCircleFilledIcon></PlayCircleFilledIcon>,
+      text: '유튜브 검색',
+      path: '/youtube',
+    },
   ];
 
   const list = (anchor: Anchor) => (
     <List>
       {items.map((item, index) => (
-        <ListItem button key={item.text}>
+        <ListItem button key={item.text} component={Link} to={item.path}>
           <ListItemIcon>
             {/* {index % 2 === 0 ? <MoveToInbox /> : <Mail />} */}
-            <Icon className={item.icon}></Icon>
+            {item.icon}
           </ListItemIcon>
           <ListItemText primary={item.text} />
         </ListItem>

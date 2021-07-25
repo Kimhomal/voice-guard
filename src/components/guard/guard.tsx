@@ -1,17 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { AuthService } from '../../service/auth_service';
 import { Typography } from '@material-ui/core';
 
-const Guard = ({ authService }: { authService: AuthService }) => {
-  const history = useHistory();
-
-  authService.onAuthChange((user) => {
-    if (!user) {
-      history.push('/');
-    }
-  });
-
+const Guard = () => {
   return (
     <div>
       <Typography>

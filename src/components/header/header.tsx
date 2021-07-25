@@ -16,7 +16,7 @@ import {
 } from '@material-ui/icons';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
-import { toggleSidebarFucntion } from '../../app';
+import { toggleSidebarFucntion } from '../private_route/private_route';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
