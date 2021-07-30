@@ -1,36 +1,55 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Divider, Grid, Typography } from '@material-ui/core';
+import {
+  Restore as RestoreIcon,
+  Star as StarIcon,
+  PlaylistPlay as PlaylistPlayIcon,
+} from '@material-ui/icons';
+import GuardList from './guard_list/guard_list';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    sectionList: {},
+    divider: {
+      margin: theme.spacing(2, 0),
+    },
+    subtitle: {
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: theme.spacing(1),
+    },
+  })
+);
 const Guard = () => {
+  const classes = useStyles();
+
   return (
-    <div>
-      <Typography>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus
-        non enim praesent elementum facilisis leo vel. Risus at ultrices mi
-        tempus imperdiet. Semper risus in hendrerit gravida rutrum quisque non
-        tellus. Convallis convallis tellus id interdum velit laoreet id donec
-        ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl
-        suscipit adipiscing bibendum est ultricies integer quis. Cursus euismod
-        quis viverra nibh cras. Metus vulputate eu scelerisque felis imperdiet
-        proin fermentum leo. Mauris commodo quis imperdiet massa tincidunt. Cras
-        tincidunt lobortis feugiat vivamus at augue. At augue eget arcu dictum
-        varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-        Lorem donec massa sapien faucibus et molestie ac. Consequat mauris nunc
-        congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-        facilisi etiam dignissim diam. Pulvinar elementum integer enim neque
-        volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-        tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-        sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-        tincidunt ornare massa eget egestas purus viverra accumsan in. In
-        hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec
-        nam aliquam sem et tortor. Habitant morbi tristique senectus et.
-        Adipiscing elit duis tristique sollicitudin nibh sit. Ornare aenean
-        euismod elementum nisi quis eleifend. Commodo viverra maecenas accumsan
-        lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices
-        sagittis orci a.
-      </Typography>
-    </div>
+    <>
+      <div className={classes.sectionList}>
+        <div className={classes.subtitle}>
+          <RestoreIcon></RestoreIcon>
+          <Typography variant="subtitle1">기록</Typography>
+        </div>
+        <GuardList></GuardList>
+      </div>
+      <Divider className={classes.divider}></Divider>
+      <div className={classes.sectionList}>
+        <div className={classes.subtitle}>
+          <StarIcon></StarIcon>
+          <Typography variant="subtitle1">즐겨찾기</Typography>
+        </div>
+        <Grid container spacing={1}></Grid>
+      </div>
+      <Divider className={classes.divider}></Divider>
+      <div className={classes.sectionList}>
+        <div className={classes.subtitle}>
+          <PlaylistPlayIcon></PlaylistPlayIcon>
+          <Typography variant="subtitle1">재생목록</Typography>
+        </div>
+        <Grid container spacing={1}></Grid>
+      </div>
+    </>
   );
 };
 export default Guard;

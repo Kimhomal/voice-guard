@@ -1,6 +1,5 @@
 import {
   AppBar,
-  fade,
   IconButton,
   InputBase,
   Menu,
@@ -14,7 +13,12 @@ import {
   AccountCircle as AccountCircleIcon,
   MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import {
+  alpha,
+  createStyles,
+  makeStyles,
+  Theme,
+} from '@material-ui/core/styles';
 import React from 'react';
 import { toggleSidebarFucntion } from '../private_route/private_route';
 
@@ -38,9 +42,9 @@ const useStyles = makeStyles((theme: Theme) =>
     search: {
       position: 'relative',
       borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
+      backgroundColor: alpha(theme.palette.common.white, 0.15),
       '&:hover': {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
       },
       marginRight: theme.spacing(2),
       marginLeft: 0,
