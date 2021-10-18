@@ -101,6 +101,7 @@ const Sidebar = ({
       ))}
     </List>
   );
+
   return (
     <>
       {isWidthUp('sm', width) ? (

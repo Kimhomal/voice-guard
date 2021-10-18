@@ -9,9 +9,12 @@ export interface AuthService {
   login(providerName: string): Promise<firebase.auth.UserCredential>;
   logout(): void;
   onAuthChange(onUserChanged: (user: firebase.User | null) => void): void;
+  redirect(): void;
 }
 
 class AuthServiceImpl implements AuthService {
+  constructor() {}
+
   login(providerName: string) {
     switch (providerName) {
       case 'Google':
@@ -30,6 +33,31 @@ class AuthServiceImpl implements AuthService {
   onAuthChange(onUserChanged: (user: firebase.User | null) => void) {
     firebaseAuth.onAuthStateChanged(onUserChanged);
   }
+
+  redirect() {
+    firebaseAuth.signInWithRedirect(googleAuthProvider);
+  }
+
+  // getAccessToken() {
+  //   firebaseAuth
+  //     .getRedirectResult()
+  //     .then((result) => {
+  //       console.log(result);
+  //       if (result.credential) {
+  //         const credential: firebase.auth.OAuthCredential = result.credential;
+
+  //         const token = credential.accessToken;
+  //         console.log(`access token: ${token}`);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       const errorCode = error.code;
+  //       const errorMessage = error.message;
+  //       const email = error.email;
+  //       const credential = error.credential;
+  //       console.log(`${errorCode} ${errorMessage} ${email} ${credential}`);
+  //     });
+  // }
 }
 
 export default AuthServiceImpl;

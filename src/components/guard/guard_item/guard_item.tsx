@@ -6,16 +6,20 @@ import {
   IconButton,
   Typography,
   Tooltip,
-  Backdrop,
-  LinearProgress,
 } from '@material-ui/core';
-import { makeStyles, Theme, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   MoreVert as MoreVertIcon,
   PlayArrow as PlayArrowIcon,
 } from '@material-ui/icons';
 import React, { useState } from 'react';
-import clsx from 'clsx';
+import { GuardObject } from '../../../service/guard_repository';
+import LimitedBackdrop from '../../common/loading/loading';
+
+type GuardItemProp = {
+  object: GuardObject;
+  player: any;
+};
 
 const useStyles = makeStyles({
   root: {
@@ -25,7 +29,7 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     display: 'box',
     boxOrient: 'vertical',
-    height: '3.46rem',
+    height: '3.543rem',
     lineClamp: 2,
   },
   rightButton: {
@@ -43,22 +47,28 @@ const useStyles = makeStyles({
   },
 });
 
-const LimitedBackdrop = withStyles((theme: Theme) => ({
-  root: { position: 'absolute', zIndex: theme.zIndex.drawer + 1 },
-}))(Backdrop);
-
-const GuardItem = ({ title }: { title: string }) => {
+const GuardItem = ({ object, player }: GuardItemProp) => {
   const classes = useStyles();
   const [backdrop, setBackdrop] = useState(false);
-  const [progressOpen, setProgressOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
+  // const [progressOpen, setProgressOpen] = useState(false);
+
+  // const normalise = () => {
+  //   return (
+  //     ((progress.current - progress.start) * 100) /
+  //     (progress.end - progress.start)
+  //   );
+  // };
 
   const handleGuardStart = (event: React.MouseEvent<HTMLElement>) => {
-    setProgressOpen(true);
-  };
+    // setProgressOpen(true);
+    if (!player) return;
 
-  const handleGuardEnd = (event: React.MouseEvent<HTMLElement>) => {
-    setProgressOpen(false);
+    player.loadVideoById({
+      videoId: object.videoId,
+      startSeconds: object.start,
+      endSeconds: object.end,
+      suggestedQuality: 'default',
+    });
   };
 
   return (
@@ -71,18 +81,26 @@ const GuardItem = ({ title }: { title: string }) => {
           <PlayArrowIcon></PlayArrowIcon>
         </LimitedBackdrop>
         <CardContent>
+          {/* <Box display="none">
+            <iframe
+              id={`${title}-ytplayer`}
+              src="https://www.youtube.com/embed/M7lc1UVf-VE"
+            ></iframe>
+            <div id={videoId}></div>
+          </Box> */}
           <Typography className={classes.title} variant="h5">
-            {title}
+            {object.title}
           </Typography>
         </CardContent>
-        <LinearProgress
+        {/* <LinearProgress
           className={clsx(classes.progress, {
             [classes.progressOpen]: progressOpen,
             [classes.progressClose]: !progressOpen,
           })}
+          color="secondary"
           variant="determinate"
-          value={progress}
-        ></LinearProgress>
+          value={0}
+        ></LinearProgress> */}
       </CardActionArea>
       <CardActions>
         <Tooltip title="수정">

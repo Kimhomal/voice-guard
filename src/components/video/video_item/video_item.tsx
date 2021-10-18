@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonBase, Grid, Paper, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import TitlePopover from '../../popover/popover';
+import TitlePopover from '../../common/popover/popover';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,25 +48,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VideoItem = (props?: any) => {
+const VideoItem = ({
+  video,
+  selectVideo,
+}: {
+  video: any;
+  selectVideo: (video: any) => void;
+}) => {
   const classes = useStyles();
 
-  // const onVideoClick = (event: React.MouseEvent<HTMLElement>) => {
-  //   props.onVideoClick(props.video);
-  // };
+  const onVideoClick = (event: React.MouseEvent<HTMLElement>) => {
+    selectVideo(video);
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <Grid item lg={3} md={3} sm={12} className={classes.root}>
-      <Paper className={classes.paper} square>
+      <Paper className={classes.paper} square onClick={onVideoClick}>
         <Grid container spacing={0}>
           <Grid className={classes.nonepadding} item>
             <ButtonBase className={classes.image}>
               <img
                 className={classes.img}
-                width={props.video.snippet.thumbnails.medium.width}
-                height={props.video.snippet.thumbnails.medium.height}
+                width={video.snippet.thumbnails.medium.width}
+                height={video.snippet.thumbnails.medium.height}
                 alt="thumbnail"
-                src={props.video.snippet.thumbnails.medium.url}
+                src={video.snippet.thumbnails.medium.url}
               />
             </ButtonBase>
           </Grid>
@@ -74,11 +85,11 @@ const VideoItem = (props?: any) => {
             <Grid item xs container direction="column">
               <Grid item xs>
                 {/* <Typography className={classes.title} variant="subtitle1">
-                  {props.video.snippet.title}
+                  {video.snippet.title}
                 </Typography> */}
                 <TitlePopover
-                  title={props.video.snippet.title}
-                  id={props.video.id}
+                  title={video.snippet.title}
+                  id={video.id}
                   className={classes.title}
                 ></TitlePopover>
                 {/* <Typography
@@ -86,19 +97,19 @@ const VideoItem = (props?: any) => {
                   variant="body2"
                   gutterBottom
                 >
-                  {props.video.snippet.channelTitle}
+                  {video.snippet.channelTitle}
                 </Typography>
                 <Typography
                   className={classes.description}
                   variant="body2"
                   color="textSecondary"
                 >
-                  {props.video.snippet.description}
+                  {video.snippet.description}
                 </Typography> */}
               </Grid>
               <Grid item>
                 <Typography variant="body2">
-                  {props.video.snippet.publishedAt}
+                  {video.snippet.publishedAt}
                 </Typography>
               </Grid>
             </Grid>

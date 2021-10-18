@@ -14,9 +14,16 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AuthService } from '../../service/auth_service';
 import { firebase } from '../../service/firebase';
+import Youtube from '../../service/youtube';
 import styles from './signin.module.css';
 
-const Signin = ({ authService }: { authService: AuthService }) => {
+const Signin = ({
+  authService,
+  youtube,
+}: {
+  authService: AuthService;
+  youtube: Youtube;
+}) => {
   const history = useHistory();
 
   const goToGuard = (userId: string) => {
@@ -30,6 +37,11 @@ const Signin = ({ authService }: { authService: AuthService }) => {
     authService.login(name).then((result: firebase.auth.UserCredential) => {
       const user: firebase.User | null = result.user;
       goToGuard(user!.uid);
+
+      // if (result !== null) {
+      //   console.log(result);
+      //   youtube.authenticate();
+      // }
     });
   };
 

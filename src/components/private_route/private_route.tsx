@@ -65,6 +65,12 @@ const PrivateRoute = ({
     setSidebarState({ ...sidebarState, active: !sidebarState.active });
   };
 
+  // const childrenWithExtraProp = React.Children.map(children, (child) => {
+  //   if (React.isValidElement(child)) {
+  //     return React.cloneElement(child, { accessToken: authService.credential });
+  //   }
+  // });
+
   return (
     <div className={classes.root}>
       <CssBaseline />

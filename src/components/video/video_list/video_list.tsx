@@ -7,14 +7,24 @@ const useStyles = makeStyles((theme) => ({
   root: { padding: 0 },
 }));
 
-const VideoList = ({ videos }: { videos: any }) => {
+const VideoList = ({
+  videos,
+  selectVideo,
+}: {
+  videos: any;
+  selectVideo: (video: any) => void;
+}) => {
   const classes = useStyles();
 
   return (
     <Grid container className={classes.root}>
       {videos.map((item: any) => (
         // <AlignItemsList key={item.id} item={item}></AlignItemsList>
-        <VideoItem key={item.id} video={item}></VideoItem>
+        <VideoItem
+          key={item.id}
+          video={item}
+          selectVideo={selectVideo}
+        ></VideoItem>
       ))}
     </Grid>
   );

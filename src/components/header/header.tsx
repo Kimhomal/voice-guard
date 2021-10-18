@@ -1,7 +1,6 @@
 import {
   AppBar,
   IconButton,
-  InputBase,
   Menu,
   MenuItem,
   Toolbar,
@@ -9,7 +8,6 @@ import {
 } from '@material-ui/core';
 import {
   Menu as MenuIcon,
-  Search as SearchIcon,
   AccountCircle as AccountCircleIcon,
   MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
@@ -100,16 +98,16 @@ const Header = ({
 }) => {
   const classes = useStyles();
 
-  const inputRef = React.useRef<HTMLInputElement>();
+  // const inputRef = React.useRef<HTMLInputElement>();
 
-  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      if (!inputRef.current) {
-        return;
-      }
-      console.log(inputRef.current.value);
-    }
-  };
+  // const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === 'Enter') {
+  //     if (!inputRef.current) {
+  //       return;
+  //     }
+  //     console.log(inputRef.current.value);
+  //   }
+  // };
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -192,7 +190,7 @@ const Header = ({
           <Typography className={classes.title} variant="h6" noWrap>
             Voice Guard
           </Typography>
-          <div className={classes.search}>
+          {/* <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -206,7 +204,7 @@ const Header = ({
               }}
               inputProps={{ 'aria-label': 'search' }}
             />
-          </div>
+          </div> */}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton
