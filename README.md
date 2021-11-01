@@ -19,5 +19,7 @@ Youtube API 및 Firebase를 이용하여 Youtube 영상의 특정 부분만 추�
 
 ## 모바일 UI
 
-<img src="https://user-images.githubusercontent.com/11713603/139660719-e2bd534d-a564-4f6c-8d95-0d4b6ee13e7c.png" alt="Mobile View1" width="40%">
-<img src="https://user-images.githubusercontent.com/11713603/139660920-c06290b7-28bf-49f1-99c0-b47c5cfede86.png" alt="Mobile View2" width="40%">
+<div style="display:flex;">
+<img src="https://user-images.githubusercontent.com/11713603/139660719-e2bd534d-a564-4f6c-8d95-0d4b6ee13e7c.png" alt="Mobile View1" width="30%">
+<img src="https://user-images.githubusercontent.com/11713603/139673261-95343156-dd2a-41ca-9e34-4cd5766bc1e1.png" alt="Mobile View2" width="30%">
+</div>
