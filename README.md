@@ -16,3 +16,8 @@ Youtube API 및 Firebase를 이용하여 Youtube 영상의 특정 부분만 추�
 
 페이지로 이동하여 카드를 클릭하여 재생합니다
 보이스 가드를 삭제할 수 있습니다
+
+## 모바일 UI
+
+<img src="https://user-images.githubusercontent.com/11713603/139660719-e2bd534d-a564-4f6c-8d95-0d4b6ee13e7c.png" alt="Mobile View1" width="40%">
+<img src="https://user-images.githubusercontent.com/11713603/139660920-c06290b7-28bf-49f1-99c0-b47c5cfede86.png" alt="Mobile View2" width="40%">
