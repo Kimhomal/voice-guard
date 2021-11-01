@@ -1,5 +1,9 @@
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import {
   AppBar,
+  Avatar,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -17,8 +21,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core/styles';
-import React from 'react';
-import { toggleSidebarFucntion } from '../private_route/private_route';
+import { toggleSidebarFucntion } from '../routes/private_route';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     title: {
-      display: 'none',
+      display: 'block',
       [theme.breakpoints.up('sm')]: {
         display: 'block',
       },
@@ -86,18 +89,25 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'none',
       },
     },
+    logo: {
+      width: theme.spacing(3),
+      height: theme.spacing(3),
+      marginRight: theme.spacing(1),
+    },
   })
 );
 
 const Header = ({
+  userName,
   onLogout,
   toggleSidebar,
 }: {
+  userName: string | null;
   onLogout: () => void;
   toggleSidebar: toggleSidebarFucntion;
 }) => {
   const classes = useStyles();
-
+  const history = useHistory();
   // const inputRef = React.useRef<HTMLInputElement>();
 
   // const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -109,9 +119,9 @@ const Header = ({
   //   }
   // };
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+    useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -134,6 +144,17 @@ const Header = ({
   };
 
   const menuId = 'primary-search-account-menu';
+  const renderLoginButton = (
+    <Button
+      color="inherit"
+      onClick={() => {
+        history.push('/signin');
+      }}
+    >
+      Login
+    </Button>
+  );
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -144,7 +165,6 @@ const Header = ({
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={onLogout}>Logout</MenuItem>
     </Menu>
   );
@@ -169,7 +189,7 @@ const Header = ({
         >
           <AccountCircleIcon />
         </IconButton>
-        <p>Profile</p>
+        <p>{userName}</p>
       </MenuItem>
     </Menu>
   );
@@ -187,6 +207,11 @@ const Header = ({
           >
             <MenuIcon />
           </IconButton>
+          <Avatar
+            alt="Voice Guard Logo"
+            src="/shield.png"
+            className={classes.logo}
+          />
           <Typography className={classes.title} variant="h6" noWrap>
             Voice Guard
           </Typography>
@@ -207,27 +232,35 @@ const Header = ({
           </div> */}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton
-              edge="end"
-              aria-label="user menu of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircleIcon />
-            </IconButton>
+            {userName ? (
+              <Button
+                aria-label="user menu of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+                startIcon={<AccountCircleIcon />}
+              >
+                {userName}
+              </Button>
+            ) : (
+              renderLoginButton
+            )}
           </div>
           <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreVertIcon />
-            </IconButton>
+            {userName ? (
+              <IconButton
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreVertIcon />
+              </IconButton>
+            ) : (
+              renderLoginButton
+            )}
           </div>
         </Toolbar>
       </AppBar>

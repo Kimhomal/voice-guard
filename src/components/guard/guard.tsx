@@ -14,10 +14,16 @@ import {
 import GuardList from './guard_list/guard_list';
 import { useEffect, useState } from 'react';
 import LimitedBackdrop from '../common/loading/loading';
-import GuardRepository from '../../service/guard_repository';
+import GuardRepository, {
+  GuardObjectList,
+} from '../../service/guard_repository';
+import { firebaseAuth } from '../../service/firebase';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    root: {
+      padding: theme.spacing(2),
+    },
     sectionList: {
       position: 'relative',
     },
@@ -29,16 +35,24 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       marginBottom: theme.spacing(1),
     },
+    iframe: {
+      opacity: 0,
+    },
   })
 );
 
 const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
   const classes = useStyles();
 
+  const [userId, setUserId] = useState(
+    firebaseAuth.currentUser && firebaseAuth.currentUser.uid
+  );
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState<any>(null);
+  const [guards, setGuards] = useState<GuardObjectList>({});
 
   const onPlayerReady = (event: any) => {
+    // event.target.playVideo();
     setLoading(false);
   };
 
@@ -51,40 +65,61 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
     }
   };
 
-  const handleYoutubePlayer = (videoId: string) => {
-    const player = new (window as any).YT.Player(videoId, {
-      height: '360',
-      width: '640',
+  const handleYoutubePlayer = (iframeId: string) => {
+    const playerInst = new (window as any).YT.Player(iframeId, {
+      height: '1',
+      width: '1',
       videoId: 'M7lc1UVf-VE',
-      playerVars: { controls: 0, origin: window.location.href },
+      playerVars: { fs: 0, controls: 0 },
       events: {
         onReady: onPlayerReady,
         onStateChange: onPlayerStateChange,
       },
     });
-    setPlayer(player);
+    setPlayer(playerInst);
+    return playerInst;
+  };
+
+  const removeGuard = (id: string) => {
+    guardRepository.removeGuard(id);
   };
 
   // youtube iframe API 인스턴스를 리엑트 상태 변수에 저장
   useEffect(() => {
+    let playerInst: any = null;
     if (!(window as any).onYTReady) {
       (window as any).onYouTubeIframeAPIReady = () => {
-        handleYoutubePlayer('ytplayer');
+        playerInst = handleYoutubePlayer('ytplayer');
       };
     } else {
-      handleYoutubePlayer('ytplayer');
+      playerInst = handleYoutubePlayer('ytplayer');
     }
 
+    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+      user && setUserId(user.uid);
+    });
+
     return () => {
+      playerInst.destroy();
       setPlayer(null);
+      unsubscribe();
     };
   }, []);
 
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    const stopSync = guardRepository.syncGuard((result) => {
+      setGuards(result ? result : {});
+    });
+
+    return () => stopSync();
+  }, [userId, guardRepository]);
+
   return (
-    <>
-      <Box display="none">
-        <div id="ytplayer"></div>
-      </Box>
+    <div className={classes.root}>
       <div className={classes.sectionList}>
         <LimitedBackdrop open={loading}>
           <CircularProgress></CircularProgress>
@@ -93,7 +128,11 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
           <RestoreIcon></RestoreIcon>
           <Typography variant="subtitle1">기록</Typography>
         </div>
-        <GuardList player={player}></GuardList>
+        <GuardList
+          guards={guards}
+          player={player}
+          removeGuard={removeGuard}
+        ></GuardList>
       </div>
       <Divider className={classes.divider}></Divider>
       <div className={classes.sectionList}>
@@ -111,7 +150,10 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
         </div>
         <Grid container spacing={1}></Grid>
       </div>
-    </>
+      <Box className={classes.iframe}>
+        <div id="ytplayer"></div>
+      </Box>
+    </div>
   );
 };
 export default Guard;

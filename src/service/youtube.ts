@@ -27,27 +27,14 @@ export default class Youtube {
       params: {
         part: 'snippet,contentDetails',
         chart: 'mostPopular',
+        regionCode: 'KR',
         pageToken: pageToken && this.pageToken ? this.pageToken : '',
         maxResults: 24,
       },
     });
 
     this.pageToken = response.data.nextPageToken;
-
-    return response.data.items;
-  }
-
-  // 좋아요 영상 리스트 불러오기
-  async likeList(token: string) {
-    const response = await this.youtube.get('videos', {
-      params: {
-        part: 'snippet,contentDetails',
-        auth: token,
-        myRating: 'like',
-        maxResults: 24,
-      },
-    });
-
+    console.log(response.data.items);
     return response.data.items;
   }
 

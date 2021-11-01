@@ -18,10 +18,10 @@ const VideoList = ({
 
   return (
     <Grid container className={classes.root}>
-      {videos.map((item: any) => (
+      {videos.map((item: any, index: number) => (
         // <AlignItemsList key={item.id} item={item}></AlignItemsList>
         <VideoItem
-          key={item.id}
+          key={item.id + index}
           video={item}
           selectVideo={selectVideo}
         ></VideoItem>

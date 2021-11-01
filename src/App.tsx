@@ -1,13 +1,21 @@
+import { useMemo } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Youtube from './service/youtube';
 import Signin from './components/user/signin';
 import { AuthService } from './service/auth_service';
-import PrivateRoute from './components/private_route/private_route';
+import PrivateRoute from './components/routes/private_route';
+import PublicRoute from './components/routes/public_route';
 import Guard from './components/guard/guard';
 import VideoMain from './components/video/video_main/video_main';
-import { createTheme, ThemeProvider, useMediaQuery } from '@material-ui/core';
-import { useMemo } from 'react';
+import {
+  createTheme,
+  CssBaseline,
+  ThemeProvider,
+  useMediaQuery,
+} from '@material-ui/core';
+import { indigo } from '@material-ui/core/colors';
 import GuardRepository from './service/guard_repository';
+import Main from './components/main/main';
 
 const App = ({
   authService,
@@ -19,15 +27,18 @@ const App = ({
   guardRepository: GuardRepository;
 }) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
   const theme = useMemo(
     () =>
       createTheme({
         palette: {
           type: prefersDarkMode ? 'dark' : 'light',
+          primary: { main: indigo[800] },
           secondary: {
-            main: '#b9f6ca',
+            main: indigo['A400'],
           },
+        },
+        typography: {
+          fontFamily: ['"NanumGhotic Regular"', 'sans-serif'].join(','),
         },
       }),
     [prefersDarkMode]
@@ -35,10 +46,16 @@ const App = ({
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <BrowserRouter>
         <Switch>
+          <Route exact path="/signin">
+            <Signin authService={authService}></Signin>
+          </Route>
           <Route exact path="/">
-            <Signin authService={authService} youtube={youtube}></Signin>
+            <PublicRoute authService={authService}>
+              <Main></Main>
+            </PublicRoute>
           </Route>
           <Route path="/youtube">
             <PrivateRoute authService={authService}>

@@ -9,12 +9,11 @@ export interface AuthService {
   login(providerName: string): Promise<firebase.auth.UserCredential>;
   logout(): void;
   onAuthChange(onUserChanged: (user: firebase.User | null) => void): void;
+  getCurrentUser(): firebase.User | null;
   redirect(): void;
 }
 
 class AuthServiceImpl implements AuthService {
-  constructor() {}
-
   login(providerName: string) {
     switch (providerName) {
       case 'Google':
@@ -32,6 +31,10 @@ class AuthServiceImpl implements AuthService {
 
   onAuthChange(onUserChanged: (user: firebase.User | null) => void) {
     firebaseAuth.onAuthStateChanged(onUserChanged);
+  }
+
+  getCurrentUser() {
+    return firebaseAuth.currentUser;
   }
 
   redirect() {

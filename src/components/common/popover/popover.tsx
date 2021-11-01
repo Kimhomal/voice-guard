@@ -47,6 +47,7 @@ const TitlePopover = ({
         className={className}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
+        variant="body1"
       >
         {title}
       </Typography>

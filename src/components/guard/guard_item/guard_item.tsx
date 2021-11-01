@@ -6,9 +6,14 @@ import {
   IconButton,
   Typography,
   Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+  Delete as DeleteIcon,
   MoreVert as MoreVertIcon,
   PlayArrow as PlayArrowIcon,
 } from '@material-ui/icons';
@@ -17,8 +22,10 @@ import { GuardObject } from '../../../service/guard_repository';
 import LimitedBackdrop from '../../common/loading/loading';
 
 type GuardItemProp = {
+  guardId: string;
   object: GuardObject;
   player: any;
+  removeGuard: (id: string) => void;
 };
 
 const useStyles = makeStyles({
@@ -29,7 +36,7 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     display: 'box',
     boxOrient: 'vertical',
-    height: '3.543rem',
+    height: '3.8rem',
     lineClamp: 2,
   },
   rightButton: {
@@ -47,9 +54,12 @@ const useStyles = makeStyles({
   },
 });
 
-const GuardItem = ({ object, player }: GuardItemProp) => {
+const GuardItem = ({ guardId, object, player, removeGuard }: GuardItemProp) => {
   const classes = useStyles();
   const [backdrop, setBackdrop] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
   // const [progressOpen, setProgressOpen] = useState(false);
 
   // const normalise = () => {
@@ -58,6 +68,19 @@ const GuardItem = ({ object, player }: GuardItemProp) => {
   //     (progress.end - progress.start)
   //   );
   // };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const onSubmit = (event: React.MouseEvent<HTMLElement>) => {
+    removeGuard(guardId);
+    setAnchorEl(null);
+  };
 
   const handleGuardStart = (event: React.MouseEvent<HTMLElement>) => {
     // setProgressOpen(true);
@@ -76,8 +99,9 @@ const GuardItem = ({ object, player }: GuardItemProp) => {
       <CardActionArea
         onMouseEnter={() => setBackdrop(true)}
         onMouseLeave={() => setBackdrop(false)}
+        onClick={handleGuardStart}
       >
-        <LimitedBackdrop open={backdrop} onClick={handleGuardStart}>
+        <LimitedBackdrop open={backdrop}>
           <PlayArrowIcon></PlayArrowIcon>
         </LimitedBackdrop>
         <CardContent>
@@ -88,7 +112,7 @@ const GuardItem = ({ object, player }: GuardItemProp) => {
             ></iframe>
             <div id={videoId}></div>
           </Box> */}
-          <Typography className={classes.title} variant="h5">
+          <Typography className={classes.title} variant="h6">
             {object.title}
           </Typography>
         </CardContent>
@@ -107,10 +131,24 @@ const GuardItem = ({ object, player }: GuardItemProp) => {
           <IconButton
             className={classes.rightButton}
             aria-label="modify guard item"
+            onClick={handleMenuClick}
           >
-            <MoreVertIcon></MoreVertIcon>
+            <MoreVertIcon fontSize="small"></MoreVertIcon>
           </IconButton>
         </Tooltip>
+        <Menu
+          id="guard-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={onSubmit}>
+            <ListItemIcon>
+              <DeleteIcon></DeleteIcon>
+            </ListItemIcon>
+            <ListItemText>삭제</ListItemText>
+          </MenuItem>
+        </Menu>
       </CardActions>
     </Card>
   );

@@ -8,8 +8,14 @@ import {
   Slider,
   Button,
   Box,
+  useMediaQuery,
 } from '@material-ui/core';
-import { makeStyles, Theme, withStyles } from '@material-ui/core/styles';
+import {
+  makeStyles,
+  Theme,
+  withStyles,
+  useTheme,
+} from '@material-ui/core/styles';
 import { Close as CloseIcon } from '@material-ui/icons';
 import moment from 'moment';
 import 'moment-duration-format';
@@ -21,15 +27,28 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(0.5),
   },
-  frame: {
-    // width: '100%',
-  },
   fieldWrap: {
     alignItems: 'center',
     textAlign: 'center',
     marginBottom: theme.spacing(1),
     '& .MuiTextField-root': {
       margin: theme.spacing(1, 0),
+    },
+  },
+  mobileTitle: {
+    flexGrow: 1,
+  },
+  mobileVideoResponsive: {
+    overflow: 'hidden',
+    paddingBottom: '56.26%',
+    position: 'relative',
+    height: 0,
+    '& iframe': {
+      left: 0,
+      top: 0,
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
     },
   },
 }));
@@ -123,19 +142,25 @@ const VideoDetail = ({
   createGuard: (guard: GuardObject) => void;
 }) => {
   const classes = useStyles();
+  const theme = useTheme();
+  const breakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+
   const clipTitleRef = useRef<HTMLInputElement>();
+  const clipStartRef = useRef<HTMLInputElement>();
+  const clipEndRef = useRef<HTMLInputElement>();
+
   const clipMax = 60;
   const clipDefault = 10;
+  const [player, setPlayer] = useState<any>(null);
   const [saveActive, setSaveActive] = useState(false);
-  const [duration, setDuration] = useState<number>(
-    durationFormat(video.contentDetails.duration, 'seconds') as number
-  );
+  const duration = durationFormat(
+    video.contentDetails.duration,
+    'seconds'
+  ) as number;
   const [clip, setClip] = useState({
     start: 0,
     end: 10 > duration ? duration : 10,
   });
-
-  const [player, setPlayer] = useState<any>(null);
 
   const handleResize = () => {
     const iframe = document.querySelector('iframe');
@@ -200,6 +225,7 @@ const VideoDetail = ({
   };
 
   const onPlayerReady = (event: any) => {
+    breakpoint && handleResize();
     event.target.playVideo();
   };
 
@@ -210,7 +236,7 @@ const VideoDetail = ({
       videoId: video.id,
       playerVars: {
         fs: 0,
-        controls: 1,
+        controls: 0,
         disablekb: 1,
         start: clip.start,
         end: clip.end,
@@ -232,6 +258,7 @@ const VideoDetail = ({
         },
       },
     });
+
     iframe.customVars = { ...clip };
     setPlayer(iframe);
   };
@@ -246,7 +273,7 @@ const VideoDetail = ({
   };
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
+    breakpoint && window.addEventListener('resize', handleResize);
 
     if (!player) {
       if (!(window as any).onYTReady) {
@@ -262,6 +289,8 @@ const VideoDetail = ({
       start: 0,
       end: 10 > duration ? duration : 10,
     });
+
+    return () => window.removeEventListener('resize', handleResize);
   }, [video]);
 
   useEffect(() => {
@@ -275,11 +304,141 @@ const VideoDetail = ({
         player.customVars = { ...clip };
       }
     }
-  }, [clip]);
+  }, [player, clip, video]);
 
-  return (
+  const renderClipCard = (
+    <Card style={{ marginLeft: breakpoint ? 0 : 8 }}>
+      {!breakpoint && (
+        <CardHeader
+          title={'클립 만들기'}
+          action={
+            <IconButton>
+              <CloseIcon></CloseIcon>
+            </IconButton>
+          }
+        />
+      )}
+      <CardContent>
+        <Grid container className={classes.fieldWrap}>
+          <TextField
+            inputRef={clipTitleRef}
+            id="clipTitleField"
+            label="제목(필수)"
+            onChange={() => {
+              setSaveActive(!!clipTitleRef.current?.value);
+            }}
+          ></TextField>
+        </Grid>
+        <Grid container className={classes.fieldWrap}>
+          <Grid item xs>
+            <TextField
+              inputRef={clipStartRef}
+              id="clipStartField"
+              label="Start"
+              variant="outlined"
+              name="start"
+              // onChange={handleValueChange}
+              // onFocus={handleFocus}
+              onBlur={handleBlur}
+              InputProps={{
+                inputComponent: moment.duration(duration, 'seconds').hours()
+                  ? (TextMaskTimeHour as any)
+                  : (TextMaskTime as any),
+              }}
+              value={durationFormat(clip.start)}
+            ></TextField>
+          </Grid>
+          <Grid item xs={1}>
+            -
+          </Grid>
+          <Grid item xs>
+            <TextField
+              inputRef={clipEndRef}
+              id="clipEndField"
+              label="End"
+              variant="outlined"
+              name="end"
+              // onChange={handleValueChange}
+              // onFocus={handleFocus}
+              onBlur={handleBlur}
+              InputProps={{
+                inputComponent: moment.duration(duration, 'seconds').hours()
+                  ? (TextMaskTimeHour as any)
+                  : (TextMaskTime as any),
+              }}
+              value={durationFormat(clip.end)}
+            ></TextField>
+          </Grid>
+        </Grid>
+        <Grid container className={classes.fieldWrap}>
+          <CustomSlider
+            aria-labelledby="range-slider"
+            value={[clip.start, clip.end]}
+            max={duration}
+            min={0}
+            onChange={(event: any, value: number | number[]) => {
+              if (value instanceof Array) {
+                if (value[1] - value[0] > clipMax) {
+                  if (clip.start === value[0]) {
+                    value[0] = value[1] - clipMax;
+                  } else {
+                    value[1] = value[0] + clipMax;
+                  }
+                }
+
+                setClip({
+                  start: value[0],
+                  end: value[1],
+                });
+              }
+            }}
+          ></CustomSlider>
+        </Grid>
+        <Grid>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              disabled={!saveActive}
+              onClick={onSubmit}
+            >
+              저장
+            </Button>
+          </Box>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+  const renderMobile = (
+    <Grid container>
+      <Grid item className={classes.mobileVideoResponsive} xs={12}>
+        <div id="youtubeIframe"></div>
+      </Grid>
+      <Grid item xs={12}>
+        {renderClipCard}
+      </Grid>
+    </Grid>
+    // <Dialog fullScreen open={breakpoint} onClose={onMobileClose}>
+    //   <AppBar>
+    //     <Toolbar>
+    //       <Typography variant="h6" className={classes.mobileTitle}>
+    //         클립 만들기
+    //       </Typography>
+    //       <IconButton onClick={onMobileClose}>
+    //         <CloseIcon />
+    //       </IconButton>
+    //     </Toolbar>
+    //   </AppBar>
+    //   <DialogContent>
+    //     <div className={classes.mobileVideoResponsive}>
+    //       <div id="youtubeIframe"></div>
+    //     </div>
+    //   </DialogContent>
+    // </Dialog>
+  );
+
+  const renderDesktop = (
     <Grid container className={classes.root}>
-      <Grid item xs className={classes.frame}>
+      <Grid item md sm xs>
         {/* <iframe
           width="100%"
           height="500"
@@ -288,110 +447,18 @@ const VideoDetail = ({
           frameBorder="0"
           allowFullScreen
         ></iframe> */}
+        {/* {!breakpoint && <div id="youtubeIframe"></div>} */}
         <div id="youtubeIframe"></div>
         <h2>{video.snippet.title}</h2>
         <h3>{video.snippet.channelTitle}</h3>
       </Grid>
-      <Grid item xs={3}>
-        <Card style={{ marginLeft: 8 }}>
-          <CardHeader
-            title={'클립 만들기'}
-            action={
-              <IconButton>
-                <CloseIcon></CloseIcon>
-              </IconButton>
-            }
-          />
-          <CardContent>
-            <Grid container className={classes.fieldWrap}>
-              <TextField
-                inputRef={clipTitleRef}
-                id="clipTitleField"
-                label="제목(필수)"
-                onChange={() => {
-                  setSaveActive(!!clipTitleRef.current?.value);
-                }}
-              ></TextField>
-            </Grid>
-            <Grid container className={classes.fieldWrap}>
-              <Grid item xs>
-                <TextField
-                  id="clipStartField"
-                  label="Start"
-                  variant="outlined"
-                  name="start"
-                  // onChange={handleValueChange}
-                  // onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  InputProps={{
-                    inputComponent: moment.duration(duration, 'seconds').hours()
-                      ? (TextMaskTimeHour as any)
-                      : (TextMaskTime as any),
-                  }}
-                  value={durationFormat(clip.start)}
-                ></TextField>
-              </Grid>
-              <Grid item xs={1}>
-                -
-              </Grid>
-              <Grid item xs>
-                <TextField
-                  id="clipEndField"
-                  label="End"
-                  variant="outlined"
-                  name="end"
-                  // onChange={handleValueChange}
-                  // onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  InputProps={{
-                    inputComponent: moment.duration(duration, 'seconds').hours()
-                      ? (TextMaskTimeHour as any)
-                      : (TextMaskTime as any),
-                  }}
-                  value={durationFormat(clip.end)}
-                ></TextField>
-              </Grid>
-            </Grid>
-            <Grid container className={classes.fieldWrap}>
-              <CustomSlider
-                aria-labelledby="range-slider"
-                value={[clip.start, clip.end]}
-                max={duration}
-                min={0}
-                onChange={(event: any, value: number | number[]) => {
-                  if (value instanceof Array) {
-                    if (value[1] - value[0] > clipMax) {
-                      if (clip.start === value[0]) {
-                        value[0] = value[1] - clipMax;
-                      } else {
-                        value[1] = value[0] + clipMax;
-                      }
-                    }
-
-                    setClip({
-                      start: value[0],
-                      end: value[1],
-                    });
-                  }
-                }}
-              ></CustomSlider>
-            </Grid>
-            <Grid>
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  variant="outlined"
-                  disabled={!saveActive}
-                  onClick={onSubmit}
-                >
-                  저장
-                </Button>
-              </Box>
-            </Grid>
-          </CardContent>
-        </Card>
+      <Grid item md={3} sm={12} xs={12}>
+        {renderClipCard}
       </Grid>
     </Grid>
   );
+
+  return <>{breakpoint ? renderMobile : renderDesktop}</>;
 };
 
 export default VideoDetail;
