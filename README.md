@@ -2,6 +2,8 @@
 
 Youtube API 및 Firebase를 이용하여 Youtube 영상의 특정 부분만 추출하고 재생하는 웹 앱
 
+[Voice Guard Web 바로가기](https://voice-guard-9cd36.web.app/)
+
 ## 보이스가드 만들기
 
 <img src="https://user-images.githubusercontent.com/11713603/139648106-adc0458d-8254-43fb-aa2c-30dd113d37f6.gif" alt="Create Voice Guard Card" width="75%">
