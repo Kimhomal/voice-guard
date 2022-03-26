@@ -2,6 +2,7 @@ import { Box, Chip, Container, Paper, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   Add as AddIcon,
+  Devices as DevicesIcon,
   Mic as MicIcon,
   MoreVert as MoreVertIcon,
   PlayArrow as PlayArrowIcon,
@@ -55,6 +56,11 @@ const useStyles = makeStyles((theme: Theme) =>
     image: {
       width: '100%',
       maxWidth: '500px',
+    },
+    halfImage: {
+      width: '50%',
+      maxWidth: '250px',
+      margin: theme.spacing(1),
     },
   })
 );
@@ -146,6 +152,32 @@ const Main = () => {
               alt="Play Voice Guard"
               className={classes.image}
               src="/images/voice_guard_play.gif"
+            ></img>
+          </Box>
+        </Container>
+      </Box>
+      <Box component="section" sx={{ overflow: 'hidden' }}>
+        <Container className={classes.sectionContainer}>
+          <Box component="div" className={classes.sectionBox}>
+            <Typography variant="h4" gutterBottom>
+              <DevicesIcon />
+              모바일에서 사용하기
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              모바일에서 사용하기 쉽도록 디자인되어있습니다 모바일 환경에서
+              사용하는 것을 권장합니다
+            </Typography>
+          </Box>
+          <Box component="div" className={classes.sectionImage}>
+            <img
+              alt="Voice Guard in mobile"
+              className={classes.halfImage}
+              src="/images/voice-guard-mobile-view.png"
+            ></img>
+            <img
+              alt="Voice Guard in mobile"
+              className={classes.halfImage}
+              src="/images/voice-guard-mobile-view2.png"
             ></img>
           </Box>
         </Container>

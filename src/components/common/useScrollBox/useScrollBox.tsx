@@ -5,8 +5,8 @@ const timing = (1 / 60) * 1000;
 const decay = (v: number) => -0.1 * ((1 / timing) ^ 4) + v;
 
 const useScrollBox = (scrollRef: RefObject<HTMLDivElement>) => {
-  const [clickStartX, setClickStartX] = useState<number | null>(0);
-  const [scrollStartX, setScrollStartX] = useState<number | null>(0);
+  const [clickStartX, setClickStartX] = useState<number | null>(null);
+  const [scrollStartX, setScrollStartX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [direction, setDirection] = useState(0);
   const [momentum, setMomentum] = useState(0);
@@ -88,7 +88,7 @@ const useScrollBox = (scrollRef: RefObject<HTMLDivElement>) => {
       }
     }
   }, [
-    scrollRef.current,
+    scrollRef,
     clickStartX,
     isDragging,
     scrollStartX,

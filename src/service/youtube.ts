@@ -34,7 +34,6 @@ export default class Youtube {
     });
 
     this.pageToken = response.data.nextPageToken;
-    console.log(response.data.items);
     return response.data.items;
   }
 

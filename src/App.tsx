@@ -44,6 +44,14 @@ const App = ({
     [prefersDarkMode]
   );
 
+  authService.onAuthChange((user) => {
+    if (user) {
+      guardRepository.isFirstUser();
+    }
+
+    console.log('app useEffect');
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

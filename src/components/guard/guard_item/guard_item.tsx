@@ -15,16 +15,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Delete as DeleteIcon,
   MoreVert as MoreVertIcon,
-  PlayArrow as PlayArrowIcon,
+  Pause as PauseIcon,
 } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GuardObject } from '../../../service/guard_repository';
 import LimitedBackdrop from '../../common/loading/loading';
 
 type GuardItemProp = {
   guardId: string;
   object: GuardObject;
-  player: any;
+  playing: string | null;
+  handleGuard: (guardId: string, object: GuardObject) => void;
   removeGuard: (id: string) => void;
 };
 
@@ -54,7 +55,13 @@ const useStyles = makeStyles({
   },
 });
 
-const GuardItem = ({ guardId, object, player, removeGuard }: GuardItemProp) => {
+const GuardItem = ({
+  guardId,
+  object,
+  playing,
+  handleGuard,
+  removeGuard,
+}: GuardItemProp) => {
   const classes = useStyles();
   const [backdrop, setBackdrop] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -84,25 +91,23 @@ const GuardItem = ({ guardId, object, player, removeGuard }: GuardItemProp) => {
 
   const handleGuardStart = (event: React.MouseEvent<HTMLElement>) => {
     // setProgressOpen(true);
-    if (!player) return;
-
-    player.loadVideoById({
-      videoId: object.videoId,
-      startSeconds: object.start,
-      endSeconds: object.end,
-      suggestedQuality: 'default',
-    });
+    setBackdrop(true);
+    handleGuard(guardId, object);
   };
+
+  useEffect(() => {
+    playing === guardId ? setBackdrop(true) : setBackdrop(false);
+  }, [playing]);
 
   return (
     <Card className={classes.root}>
       <CardActionArea
-        onMouseEnter={() => setBackdrop(true)}
-        onMouseLeave={() => setBackdrop(false)}
+        // onMouseEnter={() => setBackdrop(true)}
+        // onMouseLeave={() => setBackdrop(false)}
         onClick={handleGuardStart}
       >
         <LimitedBackdrop open={backdrop}>
-          <PlayArrowIcon></PlayArrowIcon>
+          <PauseIcon></PauseIcon>
         </LimitedBackdrop>
         <CardContent>
           {/* <Box display="none">

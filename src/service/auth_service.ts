@@ -30,7 +30,7 @@ class AuthServiceImpl implements AuthService {
   }
 
   onAuthChange(onUserChanged: (user: firebase.User | null) => void) {
-    firebaseAuth.onAuthStateChanged(onUserChanged);
+    return firebaseAuth.onAuthStateChanged(onUserChanged);
   }
 
   getCurrentUser() {

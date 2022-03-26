@@ -1,20 +1,11 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  Grid,
-  Typography,
-} from '@material-ui/core';
-import {
-  Restore as RestoreIcon,
-  Star as StarIcon,
-  PlaylistPlay as PlaylistPlayIcon,
-} from '@material-ui/icons';
+import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Restore as RestoreIcon } from '@material-ui/icons';
 import GuardList from './guard_list/guard_list';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LimitedBackdrop from '../common/loading/loading';
 import GuardRepository, {
+  GuardObject,
   GuardObjectList,
 } from '../../service/guard_repository';
 import { firebaseAuth } from '../../service/firebase';
@@ -48,12 +39,12 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
     firebaseAuth.currentUser && firebaseAuth.currentUser.uid
   );
   const [loading, setLoading] = useState(true);
+  const [playing, setPlaying] = useState<null | string>(null);
   const [player, setPlayer] = useState<any>(null);
   const [guards, setGuards] = useState<GuardObjectList>({});
 
   const onPlayerReady = (event: any) => {
     // event.target.playVideo();
-    setLoading(false);
   };
 
   const onPlayerStateChange = (event: any) => {
@@ -62,6 +53,7 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
       // Youtube 영상 재생 시
     } else if (event.data === (window as any).YT.PlayerState.ENDED) {
       // Youtube 영상 종료 시
+      setPlaying(null);
     }
   };
 
@@ -79,6 +71,30 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
     setPlayer(playerInst);
     return playerInst;
   };
+
+  const handleGuard = useCallback(
+    (guardId: string, object: GuardObject) => {
+      if (!player) return;
+
+      if (
+        player.getPlayerState() === (window as any).YT.PlayerState.PLAYING &&
+        playing === guardId
+      ) {
+        player.stopVideo();
+        setPlaying(null);
+        return;
+      }
+
+      player.loadVideoById({
+        videoId: object.videoId,
+        startSeconds: object.start,
+        endSeconds: object.end,
+        suggestedQuality: 'default',
+      });
+      setPlaying(guardId);
+    },
+    [playing, player]
+  );
 
   const removeGuard = (id: string) => {
     guardRepository.removeGuard(id);
@@ -113,6 +129,7 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
 
     const stopSync = guardRepository.syncGuard((result) => {
       setGuards(result ? result : {});
+      setLoading(false);
     });
 
     return () => stopSync();
@@ -130,11 +147,12 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
         </div>
         <GuardList
           guards={guards}
-          player={player}
+          playing={playing}
+          handleGuard={handleGuard}
           removeGuard={removeGuard}
         ></GuardList>
       </div>
-      <Divider className={classes.divider}></Divider>
+      {/* <Divider className={classes.divider}></Divider>
       <div className={classes.sectionList}>
         <div className={classes.subtitle}>
           <StarIcon></StarIcon>
@@ -149,7 +167,7 @@ const Guard = ({ guardRepository }: { guardRepository: GuardRepository }) => {
           <Typography variant="subtitle1">재생목록</Typography>
         </div>
         <Grid container spacing={1}></Grid>
-      </div>
+      </div> */}
       <Box className={classes.iframe}>
         <div id="ytplayer"></div>
       </Box>
